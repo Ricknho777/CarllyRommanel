@@ -1,0 +1,45 @@
+services:
+  - type: web
+    name: romanel-joias
+    env: python
+    pythonVersion: "3.10.12"
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 120
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_APP
+        value: app.py
+      - key: FLASK_DEBUG
+        value: "False"
+      - key: MP_ACCESS_TOKEN
+        sync: false  
+      - key: MP_PUBLIC_KEY
+        sync: false  
+      - key: RENDER_EXTERNAL_URL
+        fromService:
+          name: romanel-joias
+          type: web
+          property: url
+      - key: ADMIN_EMAIL
+        value: "admin@romaneljoias.com"
+      - key: ADMIN_PASSWORD_HASH
+        sync: false  
+      - key: ADMIN_API_TOKEN
+        generateValue: true
+      - key: DEFAULT_FRETE
+        value: "5.0"
+      - key: FRETE_GRATIS_ACIMA
+        value: "150.0"
+      - key: PERMANENT_SESSION_LIFETIME
+        value: "3600"
+      - key: SESSION_COOKIE_SECURE
+        value: "true"
+      - key: FORCE_HTTPS
+        value: "true"

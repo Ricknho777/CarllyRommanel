@@ -1,0 +1,68 @@
+[
+  {
+    "id": 1,
+    "code": "123",
+    "name": "anel prata",
+    "price": 1.0,
+    "image": "https://images.tcdn.com.br/img/img_prod/643537/anel_feminino_solitario_gota_cravejada_em_prata_925_1774_1_584be458a2a7f1b513211f94f696564f.jpg",
+    "additional_images": [],
+    "description": "",
+    "features": [],
+    "category": "aneis",
+    "sizes": [
+      {
+        "size": "14",
+        "available": true
+      },
+      {
+        "size": "17",
+        "available": true
+      },
+      {
+        "size": "15",
+        "available": true
+      }
+    ],
+    "color": "Prata",
+    "gender": "feminino",
+    "on_sale": false,
+    "original_price": 1.0,
+    "discount_percentage": 0,
+    "stock": 10,
+    "created_at": "2025-12-28T14:09:29.956Z",
+    "updated_at": "2025-12-28T11:09:29.968053"
+  },
+  {
+    "id": 2,
+    "code": "12301",
+    "name": "anel prata",
+    "price": 1.0,
+    "image": "https://images.tcdn.com.br/img/img_prod/643537/anel_feminino_solitario_gota_cravejada_em_prata_925_1774_1_584be458a2a7f1b513211f94f696564f.jpg",
+    "additional_images": [],
+    "description": "",
+    "features": [],
+    "category": "aneis",
+    "sizes": [
+      {
+        "size": "14",
+        "available": true
+      },
+      {
+        "size": "17",
+        "available": true
+      },
+      {
+        "size": "15",
+        "available": true
+      }
+    ],
+    "color": "Prata",
+    "gender": "feminino",
+    "on_sale": false,
+    "original_price": 1.0,
+    "discount_percentage": 0,
+    "stock": 10,
+    "created_at": "2025-12-29T23:26:11.175Z",
+    "updated_at": "2025-12-29T20:26:11.190387"
+  }
+]
