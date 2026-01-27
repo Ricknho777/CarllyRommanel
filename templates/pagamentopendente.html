@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento Pendente - Romanel Joias</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fff9e6 0%, #fff0cc 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #5d4037;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            color: #d4af37;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .logo-subtitle {
+            font-size: 1.2rem;
+            color: #8d6e63;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid #e8e8e8;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, #f39c12, #f1c40f, #f39c12);
+        }
+
+        .pending-icon {
+            color: #f39c12;
+            font-size: 100px;
+            margin: 20px 0;
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+            font-weight: 600;
+        }
+
+        .message {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .details-card {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: left;
+            border-left: 5px solid #f39c12;
+        }
+
+        .detail-item {
+            margin: 12px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #5d4037;
+        }
+
+        .detail-value {
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: #f39c12;
+            color: white;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-left: 10px;
+        }
+
+        .timer-container {
+            margin: 30px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            border: 2px dashed #f39c12;
+        }
+
+        .timer-text {
+            color: #5d4037;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .timer-countdown {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #f39c12;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-seconds {
+            color: #8d6e63;
+            font-size: 1rem;
+        }
+
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #f39c12;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-box {
+            margin-top: 25px;
+            padding: 20px;
+            background: #fff8e1;
+            border-radius: 12px;
+            text-align: left;
+            border-left: 4px solid #f39c12;
+        }
+
+        .info-box h3 {
+            color: #f57c00;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .info-box ul {
+            padding-left: 20px;
+            color: #555;
+        }
+
+        .info-box li {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        @media (min-width: 768px) {
+            .button-group {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .btn {
+            padding: 18px 25px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(243, 156, 18, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #5d4037;
+            border: 2px solid #f39c12;
+        }
+
+        .btn-secondary:hover {
+            background: #fff9e6;
+            transform: translateY(-3px);
+        }
+
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #8d6e63;
+            font-size: 0.9rem;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            width: 100%;
+        }
+
+        .contact-info {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .jewelry-icon {
+            position: absolute;
+            opacity: 0.1;
+            font-size: 150px;
+            z-index: 0;
+        }
+
+        .icon-left {
+            left: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .icon-right {
+            right: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .status-updates {
+            margin-top: 25px;
+            padding: 20px;
+            background: #e8f4fd;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px dashed #3498db;
+        }
+
+        .status-updates h3 {
+            color: #2980b9;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .check-status-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .check-status-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .progress-container {
+            margin-top: 20px;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #ecf0f1;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #f39c12, #f1c40f);
+            width: 30%;
+            border-radius: 5px;
+            animation: progress 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes progress {
+            0% { width: 30%; }
+            100% { width: 70%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <div class="logo">ROMANEL</div>
+        <div class="logo-subtitle">JÓIAS FINAS</div>
+    </div>
+
+    <div class="container">
+        <div class="jewelry-icon icon-left">
+            <i class="fas fa-gem"></i>
+        </div>
+        
+        <div class="jewelry-icon icon-right">
+            <i class="fas fa-ring"></i>
+        </div>
+
+        <div class="pending-icon">
+            <i class="fas fa-clock"></i>
+        </div>
+        
+        <h1>⏳ Pagamento Pendente</h1>
+        
+        <div class="message">
+            Seu pagamento está sendo processado. Isso pode levar alguns minutos enquanto confirmamos os dados.
+            Você receberá uma notificação por email assim que o pagamento for confirmado.
+        </div>
+        
+        <div class="details-card">
+            <div class="detail-item">
+                <span class="detail-label">ID do Pagamento:</span>
+                <span class="detail-value">{{ payment_id }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Status:</span>
+                <span class="status-badge">{{ status|upper }}</span>
+            </div>
+            {% if external_reference %}
+            <div class="detail-item">
+                <span class="detail-label">Referência:</span>
+                <span class="detail-value">{{ external_reference }}</span>
+            </div>
+            {% endif %}
+            <div class="detail-item">
+                <span class="detail-label">Data e Hora:</span>
+                <span class="detail-value" id="currentDateTime"></span>
+            </div>
+        </div>
+        
+        <div class="timer-container">
+            <p class="timer-text">Você será redirecionado automaticamente para a loja em:</p>
+            <div class="timer-countdown" id="countdown">60</div>
+            <p class="timer-seconds">segundos</p>
+        </div>
+        
+        <div id="loader" class="loader"></div>
+        
+        <div class="progress-container">
+            <div class="progress-text">
+                <span>Processando pagamento</span>
+                <span>30%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <h3><i class="fas fa-info-circle"></i> O que está acontecendo:</h3>
+            <ul>
+                <li><strong>🔍 Análise do pagamento:</strong> Estamos confirmando os dados com a operadora</li>
+                <li><strong>📧 Notificação por email:</strong> Você receberá um email de confirmação em breve</li>
+                <li><strong>🛍️ Preparação do pedido:</strong> Seu pedido será processado após confirmação</li>
+                <li><strong>⏱️ Tempo estimado:</strong> Isso pode levar de alguns minutos a algumas horas</li>
+            </ul>
+        </div>
+        
+        <div class="status-updates">
+            <h3><i class="fas fa-bell"></i> Acompanhe seu pedido:</h3>
+            <p>Use o ID do pagamento para consultar o status a qualquer momento</p>
+            <button class="check-status-btn" onclick="checkPaymentStatus()">
+                <i class="fas fa-sync"></i> Verificar Status Agora
+            </button>
+        </div>
+        
+        <div class="button-group">
+            <a href="/" class="btn btn-primary">
+                <i class="fas fa-home"></i> Voltar para a Loja
+            </a>
+            <a href="/checkout.html" class="btn btn-secondary">
+                <i class="fas fa-history"></i> Ver Meus Pedidos
+            </a>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2024 Romanel Joias Finas. Todos os direitos reservados.</p>
+        <div class="contact-info">
+            <p><i class="fas fa-phone"></i> (11) 99999-9999 | <i class="fas fa-envelope"></i> contato@romaneljoias.com</p>
+        </div>
+    </div>
+
+    <script>
+        // Atualizar data e hora atual
+        function updateDateTime() {
+            const now = new Date();
+            const dateTimeStr = now.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('currentDateTime').textContent = dateTimeStr;
+        }
+        
+        // Atualizar data/hora imediatamente e a cada minuto
+        updateDateTime();
+        setInterval(updateDateTime, 60000);
+        
+        // Contador de 60 segundos
+        let seconds = 60;
+        const countdownElement = document.getElementById('countdown');
+        const loaderElement = document.getElementById('loader');
+        const redirectUrl = "{{ redirect_url or '/' }}";
+        
+        function updateCountdown() {
+            countdownElement.textContent = seconds;
+            seconds--;
+            
+            if (seconds < 0) {
+                // Redirecionar após 60 segundos
+                window.location.href = redirectUrl;
+            } else {
+                setTimeout(updateCountdown, 1000);
+            }
+        }
+        
+        // Iniciar contador
+        updateCountdown();
+        
+        // Mostrar loader nos últimos 10 segundos
+        setTimeout(() => {
+            loaderElement.style.display = 'block';
+        }, 50000);
+        
+        // Permitir redirecionamento manual ao clicar em qualquer lugar
+        document.addEventListener('click', function() {
+            window.location.href = redirectUrl;
+        });
+        
+        // Função para verificar status do pagamento
+        function checkPaymentStatus() {
+            const paymentId = "{{ payment_id }}";
+            alert(`Verificando status do pagamento ${paymentId}...\n\nEm um sistema real, esta função consultaria a API do Mercado Pago para obter o status atual do pagamento.`);
+            
+            // Em um sistema real, você faria uma requisição para sua API
+            // fetch(`/api/payment/status/${paymentId}`)
+            //   .then(response => response.json())
+            //   .then(data => {
+            //       alert(`Status atual: ${data.status}\n\n${data.message}`);
+            //   });
+        }
+        
+        // Simular atualização de progresso
+        function updateProgress() {
+            const progressText = document.querySelector('.progress-text span:last-child');
+            const progressFill = document.querySelector('.progress-fill');
+            
+            let progress = 30;
+            const interval = setInterval(() => {
+                progress += Math.random() * 5;
+                if (progress > 95) progress = 95;
+                
+                progressText.textContent = Math.round(progress) + '%';
+                progressFill.style.width = progress + '%';
+                
+                if (progress >= 95) {
+                    clearInterval(interval);
+                }
+            }, 2000);
+        }
+        
+        // Iniciar atualização de progresso
+        updateProgress();
+        
+        // Salvar informações do pagamento pendente
+        const pendingPayment = {
+            paymentId: "{{ payment_id }}",
+            status: "{{ status }}",
+            externalReference: "{{ external_reference }}",
+            timestamp: new Date().toISOString(),
+            lastChecked: new Date().toISOString()
+        };
+        
+        localStorage.setItem('pendingPayment', JSON.stringify(pendingPayment));
+        
+        console.log('⏳ Pagamento pendente. Informações salvas:', pendingPayment);
+        
+        // Configurar verificação periódica de status
+        setInterval(() => {
+            console.log('🔍 Verificando status do pagamento pendente...');
+            // Em um sistema real, você faria uma requisição para verificar o status
+        }, 30000); // Verificar a cada 30 segundos
+        
+        // Inicializar quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress();
+        });
+    </script>
+</body>
+</html>

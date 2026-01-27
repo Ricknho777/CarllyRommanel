@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento Aprovado - Romanel Joias</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fdf6e3 0%, #f5e6ca 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #5d4037;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            color: #d4af37;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .logo-subtitle {
+            font-size: 1.2rem;
+            color: #8d6e63;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid #e8e8e8;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, #d4af37, #ffd700, #d4af37);
+        }
+
+        .success-icon {
+            color: #4CAF50;
+            font-size: 100px;
+            margin: 20px 0;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+            font-weight: 600;
+        }
+
+        .message {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .details-card {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: left;
+            border-left: 5px solid #4CAF50;
+        }
+
+        .detail-item {
+            margin: 12px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #5d4037;
+        }
+
+        .detail-value {
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-left: 10px;
+        }
+
+        .timer-container {
+            margin: 30px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            border: 2px dashed #d4af37;
+        }
+
+        .timer-text {
+            color: #5d4037;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .timer-countdown {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #d4af37;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-seconds {
+            color: #8d6e63;
+            font-size: 1rem;
+        }
+
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #d4af37;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        @media (min-width: 768px) {
+            .button-group {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .btn {
+            padding: 18px 25px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #d4af37 0%, #b8941f 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #5d4037;
+            border: 2px solid #d4af37;
+        }
+
+        .btn-secondary:hover {
+            background: #fdf6e3;
+            transform: translateY(-3px);
+        }
+
+        .instructions {
+            margin-top: 25px;
+            padding: 20px;
+            background: #e8f5e9;
+            border-radius: 12px;
+            text-align: left;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .instructions h3 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .instructions ul {
+            padding-left: 20px;
+            color: #555;
+        }
+
+        .instructions li {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #8d6e63;
+            font-size: 0.9rem;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            width: 100%;
+        }
+
+        .contact-info {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .jewelry-icon {
+            position: absolute;
+            opacity: 0.1;
+            font-size: 150px;
+            z-index: 0;
+        }
+
+        .icon-left {
+            left: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .icon-right {
+            right: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <div class="logo">ROMANEL</div>
+        <div class="logo-subtitle">JÓIAS FINAS</div>
+    </div>
+
+    <div class="container">
+        <div class="jewelry-icon icon-left">
+            <i class="fas fa-gem"></i>
+        </div>
+        
+        <div class="jewelry-icon icon-right">
+            <i class="fas fa-ring"></i>
+        </div>
+
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        
+        <h1>🎉 Pagamento Aprovado!</h1>
+        
+        <div class="message">
+            Seu pagamento foi processado com sucesso! Obrigado por escolher a Romanel Joias.
+            Seu pedido está sendo preparado com carinho e em breve você receberá uma confirmação por email.
+        </div>
+        
+        <div class="details-card">
+            <div class="detail-item">
+                <span class="detail-label">ID do Pagamento:</span>
+                <span class="detail-value">{{ payment_id }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Status:</span>
+                <span class="status-badge">{{ status|upper }}</span>
+            </div>
+            {% if external_reference %}
+            <div class="detail-item">
+                <span class="detail-label">Referência:</span>
+                <span class="detail-value">{{ external_reference }}</span>
+            </div>
+            {% endif %}
+            <div class="detail-item">
+                <span class="detail-label">Data e Hora:</span>
+                <span class="detail-value" id="currentDateTime"></span>
+            </div>
+        </div>
+        
+        <div class="timer-container">
+            <p class="timer-text">Você será redirecionado automaticamente para a loja em:</p>
+            <div class="timer-countdown" id="countdown">60</div>
+            <p class="timer-seconds">segundos</p>
+        </div>
+        
+        <div id="loader" class="loader"></div>
+        
+        <div class="instructions">
+            <h3><i class="fas fa-info-circle"></i> O que acontece agora:</h3>
+            <ul>
+                <li><strong>📧 Confirmação por email:</strong> Você receberá um email com os detalhes da sua compra</li>
+                <li><strong>📦 Preparação do pedido:</strong> Suas joias estão sendo preparadas com cuidado especial</li>
+                <li><strong>🚚 Envio:</strong> Seu pedido será enviado em até 2 dias úteis</li>
+                <li><strong>📞 Suporte:</strong> Estamos à disposição para qualquer dúvida!</li>
+            </ul>
+        </div>
+        
+        <div class="button-group">
+            <a href="/" class="btn btn-primary">
+                <i class="fas fa-home"></i> Voltar para a Loja
+            </a>
+            <a href="/checkout.html" class="btn btn-secondary">
+                <i class="fas fa-shopping-cart"></i> Continuar Comprando
+            </a>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2024 Romanel Joias Finas. Todos os direitos reservados.</p>
+        <div class="contact-info">
+            <p><i class="fas fa-phone"></i> (11) 99999-9999 | <i class="fas fa-envelope"></i> contato@romaneljoias.com</p>
+        </div>
+    </div>
+
+    <script>
+        // Atualizar data e hora atual
+        function updateDateTime() {
+            const now = new Date();
+            const dateTimeStr = now.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('currentDateTime').textContent = dateTimeStr;
+        }
+        
+        // Atualizar data/hora imediatamente e a cada minuto
+        updateDateTime();
+        setInterval(updateDateTime, 60000);
+        
+        // Contador de 60 segundos
+        let seconds = 60;
+        const countdownElement = document.getElementById('countdown');
+        const loaderElement = document.getElementById('loader');
+        const redirectUrl = "{{ redirect_url or '/' }}";
+        
+        function updateCountdown() {
+            countdownElement.textContent = seconds;
+            seconds--;
+            
+            if (seconds < 0) {
+                // Redirecionar após 60 segundos
+                window.location.href = redirectUrl;
+            } else {
+                setTimeout(updateCountdown, 1000);
+            }
+        }
+        
+        // Iniciar contador
+        updateCountdown();
+        
+        // Mostrar loader nos últimos 10 segundos
+        setTimeout(() => {
+            loaderElement.style.display = 'block';
+        }, 50000);
+        
+        // Permitir redirecionamento manual ao clicar em qualquer lugar
+        document.addEventListener('click', function() {
+            window.location.href = redirectUrl;
+        });
+        
+        // Adicionar efeito sonoro (opcional)
+        function playSuccessSound() {
+            // Criar um som de sucesso simples
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // Nota C5
+            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // Nota E5
+            oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // Nota G5
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+        
+        // Tocar som ao carregar a página
+        window.onload = function() {
+            playSuccessSound();
+        };
+        
+        // Salvar informações do pedido no localStorage
+        const orderInfo = {
+            paymentId: "{{ payment_id }}",
+            status: "{{ status }}",
+            externalReference: "{{ external_reference }}",
+            timestamp: new Date().toISOString()
+        };
+        
+        localStorage.setItem('lastOrder', JSON.stringify(orderInfo));
+        
+        // Limpar carrinho após pagamento aprovado
+        localStorage.removeItem('romanelCart');
+        localStorage.removeItem('carrinho');
+        
+        console.log('✅ Pagamento aprovado! Informações salvas:', orderInfo);
+    </script>
+</body>
+</html>

@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<!-- templates/checkout.html -->
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Romanel Joias</title>
+    <style>
+        /* Estilos do checkout - mantenha seus estilos atuais */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        .form-section {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .cart-section {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #764ba2;
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .cart-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cart-total {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #667eea;
+        }
+        .empty-cart {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .empty-cart h3 {
+            color: #f44336;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Seção do Formulário -->
+        <div class="form-section">
+            <h1>Seus Dados</h1>
+            
+            <div id="error-message" class="error-message"></div>
+            <div id="success-message" class="success-message"></div>
+            
+            <form id="checkout-form">
+                <div class="form-group">
+                    <label for="nome">Nome Completo *</label>
+                    <input type="text" id="nome" name="nome" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">E-mail *</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="telefone">Telefone (Opcional)</label>
+                    <input type="tel" id="telefone" name="telefone">
+                </div>
+                
+                <div class="form-group">
+                    <label for="endereco">Endereço (Opcional)</label>
+                    <textarea id="endereco" name="endereco" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <p><strong>Pagamento 100% seguro via Mercado Pago</strong></p>
+                </div>
+                
+                <button type="submit" class="btn" id="btn-finalizar">
+                    🛒 Finalizar Compra
+                </button>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="/" style="color: #667eea; text-decoration: none;">
+                        ← Voltar para a loja
+                    </a>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Seção do Carrinho -->
+        <div class="cart-section">
+            <h1>Seu Carrinho</h1>
+            
+            <div id="loading" class="loading">
+                <p>Carregando carrinho...</p>
+            </div>
+            
+            <div id="carrinho-vazio" class="empty-cart" style="display: none;">
+                <h3>🛒 Carrinho Vazio</h3>
+                <p>Adicione produtos antes de finalizar a compra.</p>
+                <a href="/" class="btn" style="margin-top: 20px; display: inline-block; width: auto;">
+                    Ver Produtos
+                </a>
+            </div>
+            
+            <div id="carrinho-itens" style="display: none;">
+                <!-- Itens do carrinho serão inseridos aqui -->
+                <div id="itens-lista"></div>
+                
+                <div id="resumo-pedido">
+                    <h3>Resumo do Pedido</h3>
+                    <div id="resumo-detalhes"></div>
+                    <div class="cart-total">
+                        Total: <span id="total-pedido">R$ 0,00</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; font-size: 14px; color: #666;">
+                    <p>✅ Entrega estimada: 5-7 dias úteis</p>
+                    <p>✅ Produtos com garantia de 30 dias</p>
+                    <p>✅ Embalagem especial para presente</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ========== VARIÁVEIS GLOBAIS ==========
+    let carrinhoAtual = [];
+    const FRETE = 5.0; // VALOR DO FRETE - Basta alterar este valor
+    
+    // ========== FUNÇÕES DE CARRINHO ==========
+    
+    function carregarCarrinho() {
+        console.log("📦 Iniciando carregamento do carrinho...");
+        
+        try {
+            // TENTATIVA 1: Verificar carrinho do index.html (romanelCart)
+            let carrinhoSalvo = localStorage.getItem('romanelCart');
+            
+            // TENTATIVA 2: Verificar carrinho padrão (carrinho)
+            if (!carrinhoSalvo) {
+                carrinhoSalvo = localStorage.getItem('carrinho');
+                console.log("Tentando carregar do 'carrinho'...");
+            }
+            
+            console.log("Dados brutos do localStorage:", carrinhoSalvo);
+            
+            if (!carrinhoSalvo) {
+                console.warn("⚠️ Nenhum carrinho encontrado no localStorage");
+                mostrarCarrinhoVazio();
+                return;
+            }
+            
+            carrinhoAtual = JSON.parse(carrinhoSalvo);
+            console.log("Carrinho parseado:", carrinhoAtual);
+            
+            // Se o carrinho for do index.html (romanelCart), converter para o formato do checkout
+            if (carrinhoAtual && carrinhoAtual.length > 0 && carrinhoAtual[0].code) {
+                console.log("🔧 Convertendo carrinho do formato index.html para checkout...");
+                carrinhoAtual = converterCarrinhoParaCheckout(carrinhoAtual);
+            }
+            
+            if (!Array.isArray(carrinhoAtual) || carrinhoAtual.length === 0) {
+                console.warn("⚠️ Carrinho vazio ou formato inválido");
+                mostrarCarrinhoVazio();
+                return;
+            }
+            
+            // Verificar se os itens têm preço correto
+            carrinhoAtual.forEach((item, index) => {
+                if (!item.price || item.price <= 0) {
+                    console.warn(`⚠️ Item ${index} sem preço válido:`, item);
+                    item.price = 87.76; // Preço padrão
+                }
+            });
+            
+            console.log(`✅ Carrinho carregado com ${carrinhoAtual.length} item(s)`);
+            mostrarCarrinhoItens();
+            
+        } catch (error) {
+            console.error("❌ Erro ao carregar carrinho:", error);
+            mostrarErro("Erro ao carregar carrinho. Tente novamente.");
+            mostrarCarrinhoVazio();
+        }
+    }
+    
+    function converterCarrinhoParaCheckout(carrinhoIndex) {
+        // Converter do formato do index.html para o formato do checkout
+        return carrinhoIndex.map(item => {
+            return {
+                id: item.id,
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                image: item.image || "https://images.unsplash.com/photo-1605100804763-247f67b3557e"
+            };
+        });
+    }
+    
+    function mostrarCarrinhoVazio() {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('carrinho-vazio').style.display = 'block';
+        document.getElementById('carrinho-itens').style.display = 'none';
+        document.getElementById('btn-finalizar').disabled = true;
+        document.getElementById('btn-finalizar').innerText = 'Carrinho Vazio';
+    }
+    
+    function mostrarCarrinhoItens() {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('carrinho-vazio').style.display = 'none';
+        document.getElementById('carrinho-itens').style.display = 'block';
+        document.getElementById('btn-finalizar').disabled = false;
+        document.getElementById('btn-finalizar').innerText = '🛒 Finalizar Compra';
+        
+        renderizarItens();
+        calcularResumo();
+    }
+    
+    function renderizarItens() {
+        const itensLista = document.getElementById('itens-lista');
+        itensLista.innerHTML = '';
+        
+        carrinhoAtual.forEach((item, index) => {
+            const subtotal = item.price * item.quantity;
+            
+            const itemHTML = `
+                <div class="cart-item">
+                    <div>
+                        <strong>${item.name}</strong>
+                        <p>Quantidade: ${item.quantity}</p>
+                    </div>
+                    <div>
+                        <p><strong>R$ ${subtotal.toFixed(2)}</strong></p>
+                        <p style="font-size: 12px; color: #666;">R$ ${item.price.toFixed(2)} un.</p>
+                    </div>
+                </div>
+            `;
+            
+            itensLista.innerHTML += itemHTML;
+        });
+    }
+    
+    function calcularResumo() {
+        let subtotal = 0;
+        
+        carrinhoAtual.forEach(item => {
+            subtotal += item.price * item.quantity;
+        });
+        
+        const total = subtotal + FRETE;
+        
+        const resumoDetalhes = document.getElementById('resumo-detalhes');
+        resumoDetalhes.innerHTML = `
+            <p>Subtotal: R$ ${subtotal.toFixed(2)}</p>
+            <p>Frete: R$ ${FRETE.toFixed(2)}</p>
+            <p>Descontos: R$ 0,00</p>
+        `;
+        
+        document.getElementById('total-pedido').textContent = `R$ ${total.toFixed(2)}`;
+    }
+    
+    // ========== FUNÇÕES DE CHECKOUT ==========
+    
+    function mostrarErro(mensagem) {
+        const errorDiv = document.getElementById('error-message');
+        errorDiv.textContent = mensagem;
+        errorDiv.style.display = 'block';
+        
+        setTimeout(() => {
+            errorDiv.style.display = 'none';
+        }, 5000);
+    }
+    
+    function mostrarSucesso(mensagem) {
+        const successDiv = document.getElementById('success-message');
+        successDiv.textContent = mensagem;
+        successDiv.style.display = 'block';
+    }
+    
+    async function finalizarCompra(event) {
+        event.preventDefault();
+        
+        console.log("Iniciando finalização da compra...");
+        
+        // Coletar dados do formulário
+        const formData = new FormData(event.target);
+        const nome = formData.get('nome');
+        const email = formData.get('email');
+        const telefone = formData.get('telefone');
+        const endereco = formData.get('endereco');
+        
+        // Validar dados
+        if (!nome || !email) {
+            alert("Por favor, preencha o nome e e-mail.");
+            return;
+        }
+        
+        // Obter carrinho do localStorage
+        let carrinho = JSON.parse(localStorage.getItem('romanelCart') || '[]');
+        if (carrinho.length === 0) {
+            carrinho = JSON.parse(localStorage.getItem('carrinho') || '[]');
+        }
+        
+        if (carrinho.length === 0) {
+            alert("Seu carrinho está vazio!");
+            return;
+        }
+        
+        // Converter para formato do checkout se necessário
+        let carrinhoParaEnviar = carrinho;
+        if (carrinho[0] && carrinho[0].code) {
+            carrinhoParaEnviar = carrinho.map(item => ({
+                id: item.id,
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity || 1,
+                image: item.image
+            }));
+        }
+        
+        console.log("Enviando dados para o servidor...");
+        
+        try {
+            const response = await fetch('/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    nome: nome,
+                    email: email,
+                    telefone: telefone || '',
+                    endereco: endereco || '',
+                    carrinho: carrinhoParaEnviar,
+                    frete: 5.00 // Valor do frete
+                })
+            });
+            
+            const resultado = await response.json();
+            
+            if (resultado.success && resultado.redirect_url) {
+                console.log("Redirecionando para pagamento...");
+                
+                // Limpar carrinho após sucesso
+                localStorage.removeItem('romanelCart');
+                localStorage.removeItem('carrinho');
+                
+                // Redirecionar para Mercado Pago
+                window.location.href = resultado.redirect_url;
+            } else {
+                console.error("Erro na finalização:", resultado.error);
+                alert(`Erro: ${resultado.error || 'Erro desconhecido'}`);
+            }
+        } catch (error) {
+            console.error("Erro na finalização:", error);
+            alert("Erro de conexão com o servidor. Tente novamente.");
+        }
+    }
+    
+    // ========== INICIALIZAÇÃO ==========
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("✅ Página de checkout carregada");
+        
+        // Carregar carrinho
+        carregarCarrinho();
+        
+        // Configurar formulário
+        document.getElementById('checkout-form').addEventListener('submit', finalizarCompra);
+    });
+    
+    // Debug: Mostrar no console quando a página carrega
+    console.log("🔄 Script checkout.js carregado");
+    </script>
+    
+    <!-- Link para debug -->
+    <div style="position: fixed; bottom: 10px; right: 10px; z-index: 1000;">
+        <a href="/debug/carrinho" style="background: #f44336; color: white; padding: 10px; border-radius: 5px; text-decoration: none; font-size: 12px;">
+            🔍 Debug Carrinho
+        </a>
+    </div>
+</body>
+</html>
